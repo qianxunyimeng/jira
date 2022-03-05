@@ -1,4 +1,5 @@
 import { Table } from "antd";
+import dayjs from "dayjs";
 import React from "react";
 import { User } from "./search-panel";
 
@@ -8,6 +9,7 @@ interface Project {
   personId: string;
   pin: boolean;
   organization: string;
+  created: number;
 }
 
 interface ListProps {
@@ -23,8 +25,12 @@ export default function List({ list, users }: ListProps) {
       sorter: (a: any, b: any) => a.name.localCompare(b.name),
     },
     {
+      title: "部门",
+      dataIndex: "organization",
+    },
+    {
       title: "负责人",
-      render(value: any, project: any) {
+      render(value: any, project: Project) {
         return (
           <span>
             {users.find((user) => user.id === project.personId)?.name || "未知"}
@@ -32,8 +38,22 @@ export default function List({ list, users }: ListProps) {
         );
       },
     },
+    {
+      title: "创建时间",
+      render(value: number, project: Project) {
+        return (
+          <span>
+            {project.created
+              ? dayjs(project.created).format("YYYY-MM-DD")
+              : "无"}
+          </span>
+        );
+      },
+    },
   ];
-  return <Table pagination={false} columns={colums} dataSource={list} />;
+  return (
+    <Table pagination={false} columns={colums} dataSource={list} rowKey="id" />
+  );
   // return (
   //   <table>
   //     <thead>

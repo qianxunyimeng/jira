@@ -4,8 +4,9 @@ import { cleanEmptyObject, useDebounce, useMount } from "utils";
 import List from "./list";
 import SearchPanel from "./search-panel";
 import { useHttp } from "utils/http";
+import styled from "@emotion/styled";
 
-const apiUrl = process.env.REACT_APP_API_URL;
+//const apiUrl = process.env.REACT_APP_API_URL;
 
 export default function ProjectListIndex() {
   const [users, setUsers] = useState([]);
@@ -20,6 +21,7 @@ export default function ProjectListIndex() {
 
   useEffect(() => {
     client("projects", { data: cleanEmptyObject(debounceParam) }).then(setList);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debounceParam]);
 
   useMount(() => {
@@ -32,13 +34,18 @@ export default function ProjectListIndex() {
   });
 
   return (
-    <div>
+    <Container>
+      <h1>项目列表</h1>
       <SearchPanel
         param={param}
         setParam={setParam}
         users={users}
       ></SearchPanel>
       <List list={list} users={users}></List>
-    </div>
+    </Container>
   );
 }
+
+const Container = styled.div`
+  padding: 3.2rem;
+`;

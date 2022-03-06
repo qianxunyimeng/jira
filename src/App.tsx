@@ -4,12 +4,16 @@ import "./App.css";
 import { useAuth } from "context/auth-context";
 import { AuthenticatedApp } from "authenticated-app";
 import { UnauthticatedApp } from "unauthenticated-app";
+import { ErrorBoundary } from "components/err-boundary";
+import { FullPageErrorCallback } from "components/lib";
 
 function App() {
   const { user } = useAuth();
   return (
     <div className="App">
-      {user ? <AuthenticatedApp /> : <UnauthticatedApp />}
+      <ErrorBoundary fallbackRender={FullPageErrorCallback}>
+        {user ? <AuthenticatedApp /> : <UnauthticatedApp />}
+      </ErrorBoundary>
     </div>
   );
 }

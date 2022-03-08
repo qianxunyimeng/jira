@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import * as qs from "qs";
-import { cleanEmptyObject, useDebounce, useMount } from "utils";
+import {
+  cleanEmptyObject,
+  useDebounce,
+  useDocumentTitle,
+  useMount,
+} from "utils";
 import List, { Project } from "./list";
 import SearchPanel from "./search-panel";
 //import { useHttp } from "utils/http";
@@ -8,12 +13,13 @@ import styled from "@emotion/styled";
 //import { useAsync } from "utils/use-async";
 import { useProjects } from "utils/project";
 import { useUsers } from "utils/user";
+import { Outlet } from "react-router";
 
 //const apiUrl = process.env.REACT_APP_API_URL;
 
 export default function ProjectListIndex() {
   //const [users, setUsers] = useState([]);
-
+  useDocumentTitle("项目列表", false);
   const [param, setParam] = useState({
     name: "",
     personId: "",

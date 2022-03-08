@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { log } from "console";
+import { useEffect, useRef, useState } from "react";
 
 export const isFalseValue = (value: unknown) => (value === 0 ? false : !value);
 
@@ -53,4 +54,48 @@ export const useArray = <T>(initialArray: T[]) => {
       setValue(copy);
     },
   };
+};
+
+// hook + 闭bao
+// export const useDocumentTitle = (title: string,keepOnUnmount:boolean = true) => {
+
+//   const oldTitle = document.title
+//   console.log("渲染时的oldtitle: ",oldTitle);
+
+//   useEffect(() => {
+//     document.title = title
+//   }, [title])
+
+//   useEffect(() => {
+//     //组件卸载时调用
+//     return () => {
+//       if (!keepOnUnmount) {
+//         console.log("卸载时的oldtitle: ", oldTitle);
+//         document.title = oldTitle
+//       }
+//     }
+//   },[])
+// }
+
+export const useDocumentTitle = (
+  title: string,
+  keepOUnmount: boolean = true
+) => {
+  const oldTitle = useRef(document.title).current;
+
+  useEffect(() => {
+    document.title = title;
+  }, [title]);
+
+  useEffect(() => {
+    return () => {
+      if (!keepOUnmount) {
+        document.title = oldTitle;
+      }
+    };
+  }, [keepOUnmount, oldTitle]);
+};
+
+export const resetRoute = () => {
+  window.location.href = window.location.origin;
 };

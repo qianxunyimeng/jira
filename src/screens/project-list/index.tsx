@@ -14,16 +14,15 @@ import styled from "@emotion/styled";
 import { useProjects } from "utils/project";
 import { useUsers } from "utils/user";
 import { Outlet } from "react-router";
+import { useUrlQueryparam } from "utils/url";
 
 //const apiUrl = process.env.REACT_APP_API_URL;
 
 export default function ProjectListIndex() {
   //const [users, setUsers] = useState([]);
   useDocumentTitle("项目列表", false);
-  const [param, setParam] = useState({
-    name: "",
-    personId: "",
-  });
+  //const [keys] = useState<('name'|'personId')[]>(['name','personId'])
+  const [param, setParam] = useUrlQueryparam(["name", "personId"]);
   const debounceParam = useDebounce(param, 200);
   //const [list, setList] = useState([]);
   //const client = useHttp();
@@ -56,6 +55,8 @@ export default function ProjectListIndex() {
     </Container>
   );
 }
+
+ProjectListIndex.whyDidYouRender = false;
 
 const Container = styled.div`
   padding: 3.2rem;

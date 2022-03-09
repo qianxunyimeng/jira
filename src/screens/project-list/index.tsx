@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import * as qs from "qs";
-import {
-  cleanEmptyObject,
-  useDebounce,
-  useDocumentTitle,
-  useMount,
-} from "utils";
+import { useDebounce, useDocumentTitle } from "utils";
 import List, { Project } from "./list";
 import SearchPanel from "./search-panel";
 //import { useHttp } from "utils/http";
@@ -13,20 +7,14 @@ import styled from "@emotion/styled";
 //import { useAsync } from "utils/use-async";
 import { useProjects } from "utils/project";
 import { useUsers } from "utils/user";
-import { Outlet } from "react-router";
-import { useUrlQueryparam } from "utils/url";
+import { useProjectsSearchParams } from "./util";
 
 //const apiUrl = process.env.REACT_APP_API_URL;
 
 export default function ProjectListIndex() {
-  //const [users, setUsers] = useState([]);
   useDocumentTitle("项目列表", false);
-  //const [keys] = useState<('name'|'personId')[]>(['name','personId'])
-  const [param, setParam] = useUrlQueryparam(["name", "personId"]);
+  const [param, setParam] = useProjectsSearchParams();
   const debounceParam = useDebounce(param, 200);
-  //const [list, setList] = useState([]);
-  //const client = useHttp();
-  //const { run,isLoading,error,data: list } = useAsync<Project[]>();
   const { isLoading, error, data: list } = useProjects(debounceParam);
   const { data: users } = useUsers();
   // useEffect(() => {
@@ -51,7 +39,11 @@ export default function ProjectListIndex() {
         setParam={setParam}
         users={users || []}
       ></SearchPanel>
-      <List dataSource={list || []} users={users || []}></List>
+      <List
+        dataSource={list || []}
+        users={users || []}
+        loading={isLoading}
+      ></List>
     </Container>
   );
 }

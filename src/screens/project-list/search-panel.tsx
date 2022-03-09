@@ -1,10 +1,12 @@
 /* @jsxImportSource @emotion/react */
 import { jsx, css } from "@emotion/react";
 import { Form, Input, Select } from "antd";
+import { UserSelect } from "components/user-select";
 import React, { useEffect, useState } from "react";
+import { Project } from "./list";
 
 export interface User {
-  id: string;
+  id: number;
   name: string;
   email: string;
   title: string;
@@ -12,12 +14,10 @@ export interface User {
   token: string;
 }
 
+//Pick 的作用就是提取 指定的属性
 interface SearchPanelprops {
   users: User[];
-  param: {
-    name: string;
-    personId: string;
-  };
+  param: Partial<Pick<Project, "name" | "personId">>;
   setParam: (param: SearchPanelprops["param"]) => void;
 }
 
@@ -42,7 +42,8 @@ export default function searchPanel({
         ></Input>
       </Form.Item>
       <Form.Item>
-        <Select
+        <UserSelect
+          defaultOptionName="负责人"
           value={param.personId}
           onChange={(value) =>
             setParam({
@@ -50,14 +51,7 @@ export default function searchPanel({
               personId: value,
             })
           }
-        >
-          <Select.Option value="">负责人</Select.Option>
-          {users.map((user) => (
-            <Select.Option value={String(user.id)} key={user.id}>
-              {user.name}
-            </Select.Option>
-          ))}
-        </Select>
+        ></UserSelect>
       </Form.Item>
     </Form>
   );

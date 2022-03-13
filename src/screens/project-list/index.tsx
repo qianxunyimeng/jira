@@ -15,7 +15,7 @@ export default function ProjectListIndex() {
   useDocumentTitle("项目列表", false);
   const [param, setParam] = useProjectsSearchParams();
   const debounceParam = useDebounce(param, 200);
-  const { isLoading, error, retry, data: list } = useProjects(debounceParam);
+  const { isLoading, error, data: list } = useProjects(debounceParam);
   const { data: users } = useUsers();
   // useEffect(() => {
   //   run(client("projects", { data: cleanEmptyObject(debounceParam) }))
@@ -40,7 +40,6 @@ export default function ProjectListIndex() {
         users={users || []}
       ></SearchPanel>
       <List
-        refresh={retry}
         dataSource={list || []}
         users={users || []}
         loading={isLoading}

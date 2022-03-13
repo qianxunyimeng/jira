@@ -30,9 +30,7 @@ export default function List({ users, ...props }: ListProps) {
         return (
           <Pin
             checked={project.pin}
-            onCheckedChange={(pin) =>
-              mutate({ id: project.id, pin }).then(props.refresh)
-            }
+            onCheckedChange={(pin) => mutate({ id: project.id, pin })}
           ></Pin>
         );
       },

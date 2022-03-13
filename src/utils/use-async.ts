@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useReducer, useState } from "react";
 import { useMountedRef } from "utils";
 
 interface State<D> {
@@ -79,6 +79,100 @@ export const useAsync = <D>(
         });
     },
     [config.throwOnError, mountedRef, setData, setError]
+  );
+
+  return {
+    isIdle: state.stat === "idle",
+    isLoading: state.stat === "loading",
+    isError: state.stat === "error",
+    isSuccess: state.stat === "success",
+    run,
+    setData,
+    setError,
+    retry,
+    ...state,
+  };
+};
+
+const useSafeDispatch = <T>(dispatch: (...args: T[]) => void) => {
+  const mountedRef = useMountedRef();
+  return useCallback(
+    (...args: T[]) => (mountedRef.current ? dispatch(...args) : void 0),
+    [dispatch, mountedRef]
+  );
+};
+
+export const useAsyncReducer = <D>(
+  initalState?: State<D>,
+  initConfig?: typeof defaultConfig
+) => {
+  const config = { ...defaultConfig, initConfig };
+  const [state, dispatch] = useReducer(
+    (state: State<D>, action: Partial<State<D>>) => ({ ...state, ...action }),
+    {
+      ...defaultInitalState,
+      ...initalState,
+    }
+  );
+
+  const safeDispatch = useSafeDispatch(dispatch);
+
+  //useState 惰性初始化
+  const [retry, setRetry] = useState(() => {
+    return () => {};
+  });
+
+  const setData = useCallback(
+    (data: D) => {
+      safeDispatch({
+        data,
+        stat: "success",
+        error: null,
+      });
+    },
+    [safeDispatch]
+  );
+
+  const setError = useCallback(
+    (error: Error) => {
+      safeDispatch({
+        error,
+        stat: "error",
+        data: null,
+      });
+    },
+    [safeDispatch]
+  );
+  // run用来出发异步请求
+  const run = useCallback(
+    (promise: Promise<D>, runConfig?: { retry: () => Promise<D> }) => {
+      if (!promise || !promise.then) {
+        throw new Error("请传入 Promise 类型的数据 !!!");
+      }
+
+      setRetry(() => {
+        return () => {
+          if (runConfig?.retry) {
+            run(runConfig?.retry(), runConfig);
+          }
+        };
+      });
+      //setState({ ...state, stat: "loading" });
+      //setstate的第二种用法，传入一个函数
+      safeDispatch({ stat: "loading" });
+
+      return promise
+        .then((data) => {
+          setData(data);
+          return data;
+        })
+        .catch((err) => {
+          setError(err);
+          if (config.throwOnError) return Promise.reject(err);
+          return err;
+        });
+    },
+    [config.throwOnError, setData, setError, safeDispatch]
   );
 
   return {
